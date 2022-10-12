@@ -83,17 +83,24 @@ document.querySelector("#info").addEventListener("click", e => {
   myPort.postMessage({ [action]: entry, site, tabId: currentReport.tabId });
 });
 
-document.querySelector("#report-tab").onclick = e => {
+document.querySelector("#report-tab").onclick = _ => {
   myPort.postMessage({ report_tab: currentReport });
   close();
 }
 
-document.querySelector("#complain").onclick = e => {
+document.querySelector("#complain").onclick = _ => {
   myPort.postMessage({ invoke_contact_finder: currentReport });
   close();
 }
 
-document.querySelector("#open-options").onclick = e => {
+document.querySelector("#force-noscript").onclick = async _ => {
+  await browser.tabs.sendMessage(currentReport.tabId, {
+    action: 'forceNoscript'
+  });
+  document.querySelector("#force-noscript").disabled = true;
+}
+
+document.querySelector("#open-options").onclick = _ => {
   browser.runtime.openOptionsPage();
   close();
 }

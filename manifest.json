@@ -54,7 +54,8 @@
       "match_about_blank": true,
       "all_frames": true,
       "js": [
-        "content/externalLicenseChecker.js"
+        "content/externalLicenseChecker.js",
+        "content/noscript.js"
       ]
     }
   ]
