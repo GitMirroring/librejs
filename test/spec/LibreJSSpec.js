@@ -50,7 +50,6 @@ describe('LibreJS\' components', () => {
     let url = browser.extension.getURL('/test/resources/index.html');
     tab = (await browser.tabs.query({ url }))[0] || (await browser.tabs.create({ url }));
     documentUrl = url;
-
   });
 
   describe('The whitelist/blacklist manager', () => {
@@ -257,15 +256,32 @@ describe('LibreJS\' components', () => {
     });
   });
 
-  describe('FIXME: dummy test to get noscript.js displayed in the console debugger', () => {
+  describe('User forces noscript element content', () => {
     beforeAll(async () => {
       await browser.tabs.executeScript(tab.id, {
         file: '/content/noscript.js'
       });
     });
 
-    it('IGNORE ME', () => {
-      expect(1).toBe(1);
+    it('forces noscript element content from content script', async () => {
+      const [numNsBefore] = await browser.tabs.executeScript(tab.id, {
+        code: 'document.querySelectorAll("noscript").length'
+      });
+      expect(numNsBefore).toBe(1);
+      const contentBefore = await browser.tabs.executeScript(tab.id, {
+        code: 'document.querySelectorAll("noscript")[0].innerHTML'
+      });
+      await browser.tabs.sendMessage(tab.id, {
+        action: 'forceNoscript'
+      });
+      const [numNsAfter] = await browser.tabs.executeScript(tab.id, {
+        code: 'document.querySelectorAll("noscript").length'
+      });
+      expect(numNsAfter).toBe(0);
+      const contentAfter = await browser.tabs.executeScript(tab.id, {
+        code: 'document.querySelectorAll("span[data-librejs-show-noscript]")[0].innerHTML'
+      });
+      expect(contentBefore).toEqual(contentAfter);
     });
   });
 

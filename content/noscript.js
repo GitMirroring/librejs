@@ -24,6 +24,7 @@
     for (const noscript of document.querySelectorAll(
       'noscript:not([data-librejs-nodisplay])')) {
       const replacement = document.createElement('span');
+      replacement.setAttribute('data-librejs-show-noscript', true);
       replacement.innerHTML = noscript.innerHTML;
       noscript.replaceWith(replacement);
     }
