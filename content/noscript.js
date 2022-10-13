@@ -20,16 +20,20 @@
 */
 "use strict";
 {
-  browser.runtime.onMessage.addListener(async m => {
+  const showNoScript = () => {
+    for (const noscript of document.querySelectorAll(
+      'noscript:not([data-librejs-nodisplay])')) {
+      const replacement = document.createElement('span');
+      replacement.innerHTML = noscript.innerHTML;
+      noscript.replaceWith(replacement);
+    }
+  };
+
+  browser.runtime.onMessage.addListener(m => {
     if (m.action === 'forceNoscript') {
       try {
-        debug("Received message", m);
-        for (const noscript of document.querySelectorAll(
-          'noscript:not([data-librejs-nodisplay])')) {
-          const replacement = document.createElement('span');
-          replacement.innerHTML = noscript.innerHTML;
-          noscript.replaceWith(replacement);
-        }
+        console.log("Received message", m);
+        showNoScript();
       } catch (e) {
         console.error(e);
       }

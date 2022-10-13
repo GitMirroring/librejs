@@ -93,8 +93,8 @@ document.querySelector("#complain").onclick = _ => {
   close();
 }
 
-document.querySelector("#force-noscript").onclick = async _ => {
-  await browser.tabs.sendMessage(currentReport.tabId, {
+document.querySelector("#force-noscript").onclick = _ => {
+  browser.tabs.sendMessage(currentReport.tabId, {
     action: 'forceNoscript'
   });
   document.querySelector("#force-noscript").disabled = true;

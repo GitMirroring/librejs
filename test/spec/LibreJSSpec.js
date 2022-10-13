@@ -257,6 +257,18 @@ describe('LibreJS\' components', () => {
     });
   });
 
+  describe('FIXME: dummy test to get noscript.js displayed in the console debugger', () => {
+    beforeAll(async () => {
+      await browser.tabs.executeScript(tab.id, {
+        file: '/content/noscript.js'
+      });
+    });
+
+    it('IGNORE ME', () => {
+      expect(1).toBe(1);
+    });
+  });
+
   describe('The external (Web Labels) license checker', () => {
     let { ExternalLicenses } = LibreJS;
     let check;
