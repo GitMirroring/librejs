@@ -42,3 +42,6 @@ cd ../
 rm -r ./build_temp
 # change the zip file to a xpi file that can be uploaded
 mv librejs.zip librejs.xpi
+
+cp native-apps/librejs.json $HOME/.mozilla/native-messaging-hosts/
+cp native-apps/librejs-logger.py /tmp/

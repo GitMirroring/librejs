@@ -30,6 +30,10 @@ const { makeDebugLogger } = require('./common/debug.js');
 
 const PRINT_DEBUG = false;
 const dbgPrint = makeDebugLogger('main_background.js', PRINT_DEBUG, Date.now());
+const appPort = browser.runtime.connectNative("librejs");
+appPort.onMessage.addListener((response) => {
+  console.log(`Received: ${response}`);
+});
 
 /*
 *
@@ -422,6 +426,8 @@ async function checkScriptAndUpdateReport(scriptSrc, url, tabId, whitelisted, is
 
 // Updates the extension icon in the toolbar.
 function updateBadge(tabId, report = null, forceRed = false) {
+  if (report)
+    appPort.postMessage(report);
   const blockedCount = report ? report.blocked.length + report.blacklisted.length : 0;
   const [text, color] = blockedCount > 0 || forceRed
     ? [blockedCount && blockedCount.toString() || '!', 'red'] : ['✓', 'green']

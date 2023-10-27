@@ -1,0 +1,7 @@
+{
+  "name": "librejs",
+  "description": "Logging LibreJS reports",
+  "path": "/tmp/librejs-logger.py",
+  "type": "stdio",
+  "allowed_extensions": ["jid1-KtlZuoiikVfFew@jetpack"]
+}
