@@ -4,6 +4,7 @@
 * Copyright (C) 2017, 2018 Nathan Nichols
 * Copyright (C) 2018 Ruben Rodriguez <ruben@gnu.org>
 * Copyright (C) 2022 Yuchen Pei <id@ypei.org>
+* Copyright (C) 2024 Andreas Gattringer <uriesk@posteo.de>
 *
 * This file is part of GNU LibreJS.
 *
@@ -383,10 +384,10 @@ async function checkScriptAndUpdateReport(scriptSrc, url, tabId, whitelisted, is
         : 'Address whitelisted by user';
       addReportEntry(tabId, { 'whitelisted': [site || url, reason], url });
     }
-    if (scriptSrc.startsWith('javascript:') || passAccWlist)
-      return scriptSrc;
-    else
-      return `/* LibreJS: script whitelisted by user preference. */\n${scriptSrc}`;
+    // Return the source unchanged: prepending a comment would alter the
+    // script body and break any Content-Security-Policy 'sha256-...' hash
+    // the page uses to allow the (free, user-accepted) inline script.
+    return scriptSrc;
   }
 
   const [accepted, editedSource, reason] = listManager.builtInHashes.has(hash(scriptSrc)) ? [true, scriptSrc, 'Common script known to be free software.'] : checkLib.checkScriptSource(scriptSrc, scriptName, isExternal);
@@ -407,10 +408,9 @@ async function checkScriptAndUpdateReport(scriptSrc, url, tabId, whitelisted, is
     }
     case 'whitelisted':
     case 'accepted':
-      {
-        return (scriptSrc.startsWith('javascript:') || passAccWlist)
-          ? scriptSrc : `/* LibreJS: script ${actionType} by user. */\n${scriptSrc}`;
-      }
+      // Leave accepted scripts byte-for-byte unchanged, so their
+      // Content-Security-Policy 'sha256-...' hash keeps matching.
+      return scriptSrc;
     // blocked
     default: {
       return scriptSrc.startsWith('javascript:')

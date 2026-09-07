@@ -2,6 +2,8 @@ New in 7.21.2
 
   * Add the ability to export and import your whitelist and blacklist as a
     plain-text librejs_settings.conf file
+  * Do not modify accepted inline scripts, so they no longer break sites
+    that pin them with a Content-Security-Policy sha256 hash
 
 New in 7.21.1
 
