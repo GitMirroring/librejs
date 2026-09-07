@@ -3,6 +3,7 @@
 *
 * Copyright (C) 2018 Giorgio Maone <giorgio@maone.net>
 * Copyright (C) 2022 Yuchen Pei <id@ypei.org>
+* Copyright (C) 2024 Andreas Gattringer <uriesk@posteo.de>
 *
 * This file is part of GNU LibreJS.
 *
@@ -46,15 +47,19 @@
         doc.head.appendChild(doc.createElement("base")).href = webLabelsUrl;
       }
       const link = a => ({ url: a.href, label: a.textContent });
-      const firstLink = parent => link(parent.querySelector("a"));
       const allLinks = parent => Array.prototype.map.call(parent.querySelectorAll("a"), link);
       for (const row of doc.querySelectorAll("table#jslicense-labels1 > tbody > tr")) {
         try {
           const cols = row.querySelectorAll("td");
-          const script = firstLink(cols[0]);
+          // A single Web Labels row may list several scripts that share the
+          // same license and source (e.g. one file per language); register
+          // each of them, not just the first.
+          const scripts = allLinks(cols[0]);
           const licenseLinks = allLinks(cols[1]);
           const sources = cols[2] ? allLinks(cols[2]) : [];
-          map.set(script.url, { script, licenseLinks, sources });
+          scripts.forEach((script) => {
+            map.set(script.url, { script, licenseLinks, sources });
+          });
         } catch (e) {
           console.error("LibreJS: error parsing Web Labels at %s, row %s", webLabelsUrl, row.innerHTML, e);
         }

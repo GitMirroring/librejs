@@ -4,6 +4,8 @@ New in 7.21.2
     plain-text librejs_settings.conf file
   * Do not modify accepted inline scripts, so they no longer break sites
     that pin them with a Content-Security-Policy sha256 hash
+  * Recognize every script listed in a single JavaScript Web Labels row,
+    not just the first
 
 New in 7.21.1
 
