@@ -75,6 +75,20 @@ input[type="text"] {
   display: flex;
   flex: 2;
 }
+
+#backup-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#backup-buttons button {
+  margin-left: 8px;
+  margin-right: 8px;
+}
+#fileInput {
+  display: none;
+}
+
 .error-msg {
   color: red;
 }

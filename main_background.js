@@ -23,7 +23,7 @@
 
 const checkLib = require('./common/checks.js');
 const { ResponseProcessor, BLOCKING_RESPONSES } = require('./bg/ResponseProcessor');
-const { Storage, ListStore, hash } = require('./common/Storage');
+const { Storage, ListStore, hash, serializeSettings, parseSettings } = require('./common/Storage');
 const { ListManager } = require('./bg/ListManager');
 const { ExternalLicenses } = require('./bg/ExternalLicenses');
 const { makeDebugLogger } = require('./common/debug.js');
@@ -892,6 +892,7 @@ async function initAddon() {
       handleScript,
       ExternalLicenses,
       ListManager, ListStore, Storage,
+      serializeSettings, parseSettings,
     };
     // create or focus the autotest tab if it's a debugging session
     if ((await browser.management.getSelf()).installType === 'development') {

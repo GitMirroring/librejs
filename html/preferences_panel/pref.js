@@ -4,6 +4,7 @@
 * Copyright (C) 2017 Nathan Nichols
 * Copyright (C) 2018 Giorgio maone
 * Copyright (C) 2022 Yuchen Pei
+* Copyright (C) 2024 Mónica Gómez
 *
 * This file is part of GNU LibreJS.
 *
@@ -215,6 +216,44 @@
         options.appendChild(option);
       }
       widget.appendChild(options);
+    },
+
+    // Write the current whitelist and blacklist to a librejs_settings.conf
+    // file the user can keep, edit or move to another profile.
+    exportSettings() {
+      const data = serializeSettings({
+        whitelist: [...Model.lists.white.items],
+        blacklist: [...Model.lists.black.items],
+      });
+      const link = document.getElementById("export");
+      link.href = URL.createObjectURL(new Blob([data], { type: "text/plain" }));
+      link.download = "librejs_settings.conf";
+      link.click();
+    },
+
+    importSettings() {
+      const input = document.getElementById("fileInput");
+      // Assign (don't addEventListener) so repeated imports don't stack handlers.
+      input.onchange = e => Controller.restoreSettings(e);
+      input.click();
+    },
+
+    restoreSettings(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async e => {
+        const { whitelist, blacklist } = parseSettings(e.target.result);
+        // Route through the Model so the white/black lists stay mutually
+        // exclusive and get persisted the same way manual edits are.
+        await Model.addToList(Model.lists.white, ...whitelist);
+        await Model.addToList(Model.lists.black, ...blacklist);
+        Controller.populateListUI();
+        Controller.syncAll();
+      };
+      reader.readAsText(file);
+      // Allow re-importing the same file immediately.
+      event.target.value = "";
     }
   };
 
@@ -256,6 +295,17 @@
 
     click(e) {
       const { target } = e;
+
+      if (target.id === "cmd-export") {
+        e.preventDefault();
+        Controller.exportSettings();
+        return;
+      }
+      if (target.id === "cmd-import") {
+        e.preventDefault();
+        Controller.importSettings();
+        return;
+      }
 
       const match = /^cmd-(white|black|delete)(list-site)?/.exec(target.id);
       if (!match) return;

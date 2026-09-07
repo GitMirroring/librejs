@@ -1,3 +1,8 @@
+New in 7.21.2
+
+  * Add the ability to export and import your whitelist and blacklist as a
+    plain-text librejs_settings.conf file
+
 New in 7.21.1
 
   * Fix eval loophole with Function constructor

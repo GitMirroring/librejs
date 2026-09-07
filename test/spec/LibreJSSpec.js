@@ -97,6 +97,21 @@ describe('LibreJS\' components', () => {
       expect(lm.getStatus('https://more.evil.gnu.org')).toBe('blacklisted');
       expect(lm.getStatus('https://more.evil.gnu.org/some/evil/path?too')).toBe('blacklisted');
     });
+    it('Should round-trip settings through export and import', () => {
+      const { serializeSettings, parseSettings } = LibreJS;
+      const whitelist = ['https://goodwebsite.com/*', 'https://*.betterwebsite.org/*'];
+      const blacklist = ['https://badwebsite.com/*', 'https://*.worsewebsite.org/*'];
+      // serialize then parse must give back exactly what went in
+      const parsed = parseSettings(serializeSettings({ whitelist, blacklist }));
+      expect(parsed.whitelist).toEqual(whitelist);
+      expect(parsed.blacklist).toEqual(blacklist);
+      // comments, blank lines and unknown sections are ignored on import
+      const messy = '# a comment\n\n[Whitelisted]\nhttps://a.com/*\n\n' +
+        '[Unknown]\nhttps://ignored.com/*\n[Blacklisted]\nhttps://b.com/*\n';
+      const parsedMessy = parseSettings(messy);
+      expect(parsedMessy.whitelist).toEqual(['https://a.com/*']);
+      expect(parsedMessy.blacklist).toEqual(['https://b.com/*']);
+    });
   })
 
   describe('The external script source processor', () => {

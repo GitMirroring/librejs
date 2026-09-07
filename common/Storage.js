@@ -3,6 +3,7 @@
 *
 * Copyright (C) 2018 Giorgio Maone <giorgio@maone.net>
 * Copyright (C) 2022 Yuchen Pei <id@ypei.org>
+* Copyright (C) 2024 Mónica Gómez <eunbyeol64@naver.com>
 *
 * This file is part of GNU LibreJS.
 *
@@ -130,8 +131,48 @@ function hash(source) {
   return shaObj.getHash('HEX');
 }
 
+/*
+  Settings backup format (librejs_settings.conf): a small INI-like plain-text
+  file with a leading '# ' comment and two sections, so it can be read, edited
+  and version-controlled by hand. serializeSettings and parseSettings are pure
+  (no DOM, no storage) and are each other's inverse, which is what the unit
+  test relies on.
+*/
+function serializeSettings({ whitelist = [], blacklist = [] } = {}) {
+  return [
+    '# LibreJS settings backup file',
+    '',
+    '[Whitelisted]',
+    ...whitelist,
+    '',
+    '[Blacklisted]',
+    ...blacklist,
+    '',
+  ].join('\n');
+}
+
+function parseSettings(text) {
+  const whitelist = [];
+  const blacklist = [];
+  let current = null;
+  for (const rawLine of String(text).split('\n')) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('#')) continue;
+    const section = /^\[(.+)\]$/.exec(line);
+    if (section) {
+      const name = section[1].trim().toLowerCase();
+      current = name === 'whitelisted' ? whitelist
+        : name === 'blacklisted' ? blacklist
+          : null; // ignore unknown sections
+      continue;
+    }
+    if (current) current.push(line);
+  }
+  return { whitelist, blacklist };
+}
+
 if (typeof module === 'object') {
-  module.exports = { ListStore, Storage, hash };
+  module.exports = { ListStore, Storage, hash, serializeSettings, parseSettings };
   // TODO: eliminate the var
   var jssha = require('jssha');
 }

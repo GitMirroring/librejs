@@ -76,6 +76,14 @@
         <label for="pref_body">Body</label>
         <textarea id="pref_body" rows="5"></textarea>
       </fieldset>
+
+      <fieldset id="section-backup"><legend>Back up or restore your whitelist and blacklist</legend>
+        <div id="backup-buttons">
+          <a id="export"><button id="cmd-export" title="Save your whitelist and blacklist to a file">Export</button></a>
+          <input type="file" id="fileInput" accept=".conf,text/plain"/>
+          <button id="cmd-import" title="Load a whitelist and blacklist from a file">Import</button>
+        </div>
+      </fieldset>
     </div>
   </body>
 </html>
