@@ -339,33 +339,37 @@ setting @code{dom.serviceWorkers.enabled} to @code{false} in the
 
 @section Dependencies
 
-LibreJS @value{VERSION} depends on a number of Node.js-based libraries that
-can be installed using the @code{npm} utility:
+LibreJS @value{VERSION} is built entirely from packages provided by the
+distribution; it needs neither @code{npm} nor network access.  On
+Trisquel 12 / Ubuntu 24.04 install the build dependencies with:
 
 @verbatim
-  $ npm install acorn jssha browserify
-  $ export PATH=$PATH:./node_modules/.bin
+  $ sudo apt install node-browserify node-acorn node-hash.js zip
 @end verbatim
 
 @section Building
-
-To build the extension run:
-@verbatim
-  $ browserify main_background.js -o bundle.js
-@end verbatim
 
 To build the extension plus create a .xpi package run:
 @verbatim
   $ ./build.sh
 @end verbatim
 
-To build the extension including the automated test suite (see TEST below) run:
+To build the extension including the automated test suite (see Testing
+below) you additionally need the Jasmine framework from the distribution:
 @verbatim
+  $ sudo apt install node-jasmine
   $ ./build.sh -t
 @end verbatim
 or
 @verbatim
   $ ./build.sh --test
+@end verbatim
+
+The @file{build.sh} script sets @code{NODE_PATH} to @file{/usr/share/nodejs}
+so that browserify resolves the distribution's Node.js modules without a
+@file{node_modules/} directory.  To build the bundle by hand:
+@verbatim
+  $ NODE_PATH=/usr/share/nodejs browserify main_background.js -o bundle.js
 @end verbatim
 
 Note: this @file{build.sh} script relies on no new source files being created.
@@ -389,15 +393,22 @@ launched from the UI by clicking the "Automated self test..." button.
 
 @section Headless testing
 
-To launch the test suite from the command line, ensure the xpi package
-has been built with automated test suite. Then install
-selenium-webdriver and geckodriver, and ensure the latter is in $PATH:
-@verbatim
-  $ npm install selenium-webdriver geckodriver
-  $ export PATH=$PATH:./node_modules/.bin
-@end verbatim
+@quotation Note
+Unlike the rest of LibreJS, the command-line runners in this and the next
+section are @emph{not} usable with Trisquel packages alone.  They drive a
+headless browser through Selenium and require the Node
+@code{selenium-webdriver} library and a @code{geckodriver} binary, neither of
+which is packaged in Trisquel 12 (which also does not ship @code{npm}).  Obtain
+them from outside the distribution: @code{selenium-webdriver} e.g.@: via
+@code{npm}, and @code{geckodriver} from
+@url{https://github.com/mozilla/geckodriver/releases} (ensure @code{geckodriver}
+is in @code{$PATH}).  The Trisquel-native way to run the automated tests
+without any of this is to load the extension as a Temporary Add-on in your
+browser (see the Testing section above).
+@end quotation
 
-Now you can invoke the test with
+With @code{selenium-webdriver} and @code{geckodriver} available, build the xpi
+with the test suite and invoke the test with
 @verbatim
   $ node ./utilities/test.js
 @end verbatim
@@ -410,17 +421,10 @@ Optionally you can also test with a chosen seed
 @end verbatim
 
 @section Headless compliance check
-To check whether a webpage is LibreJS-compliant from the command line,
-ensure that the xpi package has been built WITHOUT the automated test
-suite. Then install selenium-webdriver and geckodriver, and ensure the
-latter is in $PATH:
-@verbatim
-  $ npm install selenium-webdriver
-  $ npm install geckodriver
-  $ export PATH=$PATH:./node_modules/.bin
-@end verbatim
-
-Now you can check a webpage for compliance with
+This runner has the same external requirements as headless testing above
+(@code{selenium-webdriver} and @code{geckodriver}, which are not part of
+Trisquel).  Build the xpi WITHOUT the automated test suite, then check a
+webpage for compliance with
 @verbatim
   $ node ./utilities/compliance.js <url>
 @end verbatim

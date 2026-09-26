@@ -1,4 +1,5 @@
-const fetch = require("node-fetch")
+// Uses Node's built-in global fetch (Node >= 18, e.g. the nodejs package in
+// Trisquel 12), so this script needs no packages from outside the distribution.
 const crypto = require("crypto")
 const obj = {}
 

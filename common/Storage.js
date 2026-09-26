@@ -126,9 +126,7 @@ class ListStore {
 }
 
 function hash(source) {
-  const shaObj = new jssha('SHA-256', 'TEXT')
-  shaObj.update(source);
-  return shaObj.getHash('HEX');
+  return hashjs.sha256().update(source).digest('hex');
 }
 
 /*
@@ -174,5 +172,7 @@ function parseSettings(text) {
 if (typeof module === 'object') {
   module.exports = { ListStore, Storage, hash, serializeSettings, parseSettings };
   // TODO: eliminate the var
-  var jssha = require('jssha');
+  // hash.js is a small pure-JS implementation (Trisquel package node-hash.js);
+  // its default UTF-8 text handling matches the previous jsSHA 'TEXT' hashes.
+  var hashjs = require('hash.js');
 }

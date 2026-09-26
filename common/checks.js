@@ -149,7 +149,8 @@ function fullEvaluate(script) {
   let tokens;
 
   try {
-    tokens = acorn.tokenizer(script);
+    // ecmaVersion is required since acorn 8; omitting it throws at tokenize time.
+    tokens = acorn.tokenizer(script, { ecmaVersion: 'latest' });
   } catch (e) {
     console.warn('Tokenizer could not be initiated (probably invalid code)');
     return [false, 'Tokenizer could not be initiated (probably invalid code)'];
